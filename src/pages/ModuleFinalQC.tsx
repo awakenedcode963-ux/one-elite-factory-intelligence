@@ -117,7 +117,7 @@ export function ModuleFinalQC() {
     };
 
     try {
-      await submitInspection('Lab', [record]);
+      await submitInspection('Lab', record);
       
       setRecords(prev => [record, ...prev]);
       

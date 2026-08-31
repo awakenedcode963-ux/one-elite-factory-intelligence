@@ -8,59 +8,39 @@ import {
 import clsx from 'clsx';
 import { useLanguage } from '../lib/LanguageContext';
 
-const paretoData = [
-  { name: 'Wall Thickness', count: 120, cumulative: 35 },
-  { name: 'Burned', count: 80, cumulative: 58 },
-  { name: 'Reich', count: 50, cumulative: 73 },
-  { name: 'Ovality', count: 40, cumulative: 85 },
-  { name: 'Short Shot', count: 25, cumulative: 92 },
-  { name: 'Scratches', count: 15, cumulative: 96 },
-  { name: 'Other', count: 13, cumulative: 100 }
-];
-
-const scrapData = [
-  { machine: 'Ext-101', Extrusion: 45, Target: 50 },
-  { machine: 'Ext-102', Extrusion: 55, Target: 50 },
-  { machine: 'Ext-303', Extrusion: 30, Target: 50 },
-  { machine: 'Inj-201', Injection: 20, Target: 30 },
-  { machine: 'Inj-202', Injection: 15, Target: 30 },
-  { machine: 'SOCKET', Extrusion: 25, Target: 40 },
-];
-
-const trendData = [
-  { day: 'Mon', scrapPercent: 1.2, target: 1.5 },
-  { day: 'Tue', scrapPercent: 1.4, target: 1.5 },
-  { day: 'Wed', scrapPercent: 1.6, target: 1.5 },
-  { day: 'Thu', scrapPercent: 1.3, target: 1.5 },
-  { day: 'Fri', scrapPercent: 1.1, target: 1.5 },
-  { day: 'Sat', scrapPercent: 0.9, target: 1.5 },
-  { day: 'Sun', scrapPercent: 1.0, target: 1.5 },
-];
-
-// SPC Math Helpers
-const generateProcessData = (nominal: number, stdDevBase: number, points: number, shift: number = 0) => {
-  const data = [];
-  let currentMean = nominal + shift;
-  for(let i=0; i<points; i++) {
-    // Box-Muller transform for normal distribution
-    let u = 0, v = 0;
-    while(u === 0) u = Math.random();
-    while(v === 0) v = Math.random();
-    let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-    
-    // Occasionally introduce a trend or shift
-    if (i > 20) currentMean += (shift * 0.5);
-    
-    const val = currentMean + num * stdDevBase;
-    data.push(val);
-  }
-  return data;
-};
-
-const calculateMean = (data: number[]) => data.reduce((a, b) => a + b, 0) / data.length;
-const calculateStdDev = (data: number[], mean: number) => Math.sqrt(data.reduce((sq, n) => sq + Math.pow(n - mean, 2), 0) / (data.length - 1));
 
 export function ModuleAnalytics() {
+  const [analyticsData, setAnalyticsData] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    import('../services/api').then(({ fetchAnalyticsData }) => {
+      fetchAnalyticsData()
+        .then(data => {
+          setAnalyticsData(data);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error("Analytics data load failed:", err);
+          // Fallback
+          setAnalyticsData({
+            paretoData: [
+              { name: 'Wall Thickness', count: 120, cumulative: 35 },
+              { name: 'Burned', count: 80, cumulative: 58 },
+              { name: 'Reich', count: 50, cumulative: 73 },
+            ],
+            scrapData: [
+              { machine: 'Ext-101', Extrusion: 45, Target: 50 },
+            ],
+            trendData: [
+              { date: 'Mon', FPY: 96, Target: 95 },
+            ]
+          });
+          setLoading(false);
+        });
+    });
+  }, []);
+
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'spc'>('dashboard');
   
@@ -161,6 +141,17 @@ export function ModuleAnalytics() {
   };
   
   const cpkStatus = getCpkStatus(spcData.stats.cpk);
+
+  
+  if (loading || !analyticsData) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-zinc-500 animate-pulse">Loading Live Analytics...</div>
+      </div>
+    );
+  }
+
+  const { paretoData, scrapData, trendData } = analyticsData;
 
   return (
     <div className="print-hide p-6 lg:p-8 max-w-7xl mx-auto space-y-6">

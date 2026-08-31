@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../lib/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { Recycle, AlertTriangle, CheckCircle2, Save, Loader2, Gauge } from 'lucide-react';
-import { collection, addDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+ 
+ 
 import clsx from 'clsx';
 import { format } from 'date-fns';
 
@@ -71,23 +71,9 @@ export function ModuleCrusher() {
         createdAt: Date.now()
       };
       
-      await addDoc(collection(db, 'crusher_logs'), newRecord);
       
-      const rowDataArray = [
-        logId,
-        dateTime,
-        materialCategory,
-        machineOrigin,
-        Number(weightSent),
-        operatorName,
-        targetProduct,
-        Number(virginWeight),
-        Number(regrindWeight),
-        regrindPercent,
-        status
-      ];
       
-      await submitInspection('Crusher', rowDataArray);
+      await submitInspection('Crusher', newRecord);
       
       setShowSuccess(true); setTimeout(() => setShowSuccess(false), 3000);
       

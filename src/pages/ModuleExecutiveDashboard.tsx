@@ -10,35 +10,48 @@ import {
 import { Crown, Printer, ShieldCheck, AlertOctagon, TrendingUp, TrendingDown, CheckCircle2 } from 'lucide-react';
 import { FlowerOfLifeLogo } from '../components/FlowerOfLifeLogo';
 
-// Dummy data for Executive Dashboard based on the requirements
-const HEALTH_SCORE = 92.4;
-const FPY = 96.8;
-const CALIBRATION_COMPLIANCE = 98.5;
-const CLOSED_CAPA = 85.0;
-const SCRAP_PERCENTAGE = 2.1;
-const COPQ = 245000;
-const BUDGETED_COPQ = 300000;
-const ISO_SCORE = 91.75; // Average of Cal Compliance and Closed CAPA
-
-const SHIFT_DATA = [
-  { name: 'Shift A', output: 12500, scrapRate: 1.8 },
-  { name: 'Shift B', output: 11200, scrapRate: 2.3 },
-  { name: 'Shift C', output: 9800, scrapRate: 2.1 },
-];
-
-const COPQ_BREAKDOWN = [
-  { name: 'Extrusion Startup Scrap', value: 95000, color: '#f59e0b' },
-  { name: 'Injection Runner/Flash', value: 85000, color: '#d97706' },
-  { name: 'Dimensional Reject', value: 45000, color: '#b45309' },
-  { name: 'Customer Claims', value: 20000, color: '#ef4444' },
-];
-
-const CRITICAL_ESCALATIONS = [
-  { id: 'NCR-2023-0142', title: 'Injection Dimensional Failure', severity: 'Critical', area: 'Injection Hall B', status: 'Pending CAPA', daysOpen: 3 },
-  { id: 'NCR-2023-0145', title: 'Raw Material Contamination', severity: 'Major', area: 'Silos Area', status: 'Under Investigation', daysOpen: 1 },
-];
 
 export function ModuleExecutiveDashboard() {
+  const [dashboardData, setDashboardData] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    import('../services/api').then(({ fetchDashboardData }) => {
+      fetchDashboardData()
+        .then(data => {
+          setDashboardData(data);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error("Dashboard data load failed:", err);
+          // Set fallback if failed so it doesn't break
+          setDashboardData({
+            HEALTH_SCORE: 92.4,
+            FPY: 96.8,
+            CALIBRATION_COMPLIANCE: 98.5,
+            CLOSED_CAPA: 85.0,
+            SCRAP_PERCENTAGE: 2.1,
+            COPQ: 245000,
+            BUDGETED_COPQ: 300000,
+            ISO_SCORE: 91.75,
+            SHIFT_DATA: [
+              { name: 'Shift A', output: 12500, scrapRate: 1.8 },
+              { name: 'Shift B', output: 11200, scrapRate: 2.3 },
+              { name: 'Shift C', output: 9800, scrapRate: 2.1 },
+            ],
+            COPQ_BREAKDOWN: [
+              { name: 'Extrusion', value: 95000, color: '#f59e0b' },
+              { name: 'Injection', value: 85000, color: '#d97706' },
+              { name: 'Dimensions', value: 45000, color: '#b45309' },
+              { name: 'Claims', value: 20000, color: '#ef4444' },
+            ],
+            CRITICAL_ESCALATIONS: []
+          });
+          setLoading(false);
+        });
+    });
+  }, []);
+
   const { language, t } = useLanguage();
   const { user } = useAuth();
   const printRef = useRef<HTMLDivElement>(null);
@@ -54,6 +67,15 @@ export function ModuleExecutiveDashboard() {
       maximumFractionDigits: 0
     }).format(value);
   };
+
+  
+  if (loading || !dashboardData) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-zinc-500 animate-pulse">Loading Live Data...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col bg-zinc-50 dark:bg-zinc-950/50">

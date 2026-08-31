@@ -1,8 +1,8 @@
 import { ProductMaster, DefectMaster, CalibrationMaster, MachineMaster, DimensionMaster, PackagingMaster, EmployeeMaster, MasterData, User } from '../types/qms';
 import { fetchMasterData, submitInspection } from '../services/api';
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+ 
+ 
 import { Settings2, Plus, AlertCircle, CheckCircle2, Loader2, Calendar } from 'lucide-react';
 import { format, isPast, isToday } from 'date-fns';
 import { useLanguage } from '../lib/LanguageContext';
@@ -54,7 +54,8 @@ export function ModuleCalibration() {
         dueDate,
         createdAt: Date.now()
       };
-      await addDoc(collection(db, 'metrology_instruments'), newRecord);
+      await submitInspection('Calibration', newRecord);
+      setInstruments(prev => [newRecord, ...prev]);
       
       setIsFormOpen(false);
       setName('');

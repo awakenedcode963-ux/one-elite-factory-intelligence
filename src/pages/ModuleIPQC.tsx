@@ -1,8 +1,8 @@
 import { ProductMaster, DefectMaster, CalibrationMaster, MachineMaster, DimensionMaster, PackagingMaster, EmployeeMaster, MasterData, User } from '../types/qms';
 import { fetchMasterData, submitInspection } from '../services/api';
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+ 
+ 
 import { Gauge, Plus, CheckCircle2, AlertTriangle, AlertCircle, Loader2, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ProductQuickSelect } from '../components/ProductQuickSelect';
@@ -289,7 +289,6 @@ instrumentId,
         };
       }
 
-      await addDoc(collection(db, 'ipqc_inspections'), newRecord);
       
       // Dispatch to Google Apps Script
       const sheetName = activeTab === 'extrusion' ? 'IPQC_Extrusion' : 'IPQC_Injection';

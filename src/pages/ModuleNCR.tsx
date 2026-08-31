@@ -116,7 +116,7 @@ export function ModuleNCR() {
     };
 
     try {
-      await submitInspection('NCR', [record]);
+      await submitInspection('NCR', record);
       
       setRecords(prev => [record, ...prev]);
       

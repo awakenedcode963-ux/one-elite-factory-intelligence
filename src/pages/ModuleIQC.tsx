@@ -96,7 +96,7 @@ export function ModuleIQC() {
     };
 
     try {
-      await submitInspection('IQC', [record]);
+      await submitInspection('IQC', record);
       
       setRecords(prev => [record, ...prev]);
       

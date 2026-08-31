@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "paths": {
+      "@fi/domain": ["../domain/src/index.ts"],
+      "@fi/contracts": ["../contracts/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*"]
+}

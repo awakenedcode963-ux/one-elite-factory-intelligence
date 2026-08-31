@@ -1,0 +1,10 @@
+{
+  "name": "@fi/application",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@fi/domain": "workspace:*",
+    "@fi/contracts": "workspace:*"
+  }
+}

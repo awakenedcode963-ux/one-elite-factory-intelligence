@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../lib/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { MessageSquare, AlertTriangle, ShieldCheck, CheckCircle2, TrendingUp, DollarSign, Send, FileWarning, Search, Camera } from 'lucide-react';
-import { collection, addDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+ 
+ 
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import { format } from 'date-fns';
@@ -66,23 +66,9 @@ export function ModuleComplaints() {
         createdAt: Date.now()
       };
       
-      await addDoc(collection(db, 'customer_complaints'), newRecord);
       
-      const rowDataArray = [
-        complaintId,
-        dateStr,
-        customerName,
-        projectLocation,
-        invoiceBatch,
-        productCode,
-        category,
-        description,
-        labDisposition,
-        ncrRef,
-        status
-      ];
       
-      await submitInspection('Complaints', rowDataArray);
+      await submitInspection('Complaints', newRecord);
       
       setCustomerName('');
       setProjectLocation('');
